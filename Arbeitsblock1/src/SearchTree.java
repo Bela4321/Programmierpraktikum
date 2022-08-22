@@ -5,6 +5,9 @@ public class SearchTree {
 
     }
     private boolean solve(Instance i) throws Exception {
+        if (i.g.getEdgeCount() <= i.limit) {
+            return true;
+        }
         //simplify
         removeSingletonsv(i);
         removeDegone(i);
@@ -24,7 +27,7 @@ public class SearchTree {
         int e1=-1;
         int e2=-1;
         for (int key:i.g.AL.keySet()){
-            if (i.g.AL.get(key)!=null ||i.g.AL.get(key).size()!=0){
+            if (i.g.AL.get(key)!=null &&i.g.AL.get(key).size()!=0){
                 e1=key;
                 e2=i.g.AL.get(key).get(0);
                 break;
@@ -60,6 +63,7 @@ public class SearchTree {
         while (!solve(i)){
             k++;
             i.limit=k;
+            i.g=g.getCopy();
         }
         return k;
     }
@@ -84,7 +88,6 @@ public class SearchTree {
         for (int key:i.g.AL.keySet()){
             if (i.g.AL.get(key).size()==0){
                 i.g.deleteVertex(key);
-                i.limit--;
             }
         }
     }
@@ -99,7 +102,7 @@ public class SearchTree {
     }
     public void removeHighDeg(Instance i) {
         for (int key:i.g.AL.keySet()) {
-            if(i.g.degree(key)>i.limit) {
+            if(i.limit>0&&i.g.degree(key)>i.limit) {
                 i.g.deleteVertex(key);
                 i.limit--;
             }

@@ -9,7 +9,7 @@ public class Main {
         File folder = new File("res");
         File[] listOfFiles = folder.listFiles();
 
-        File testFile = new File("Arbeitsblock1/res/sample2.sec");
+        File testFile = new File("Arbeitsblock1/res/outdolphins.sec");
 
 
         MyGraph g = new MyGraph(testFile);
@@ -17,6 +17,10 @@ public class Main {
         System.out.println(st.solve(g));
         time =System.nanoTime()-time;
         System.out.println(time*Math.pow(10,-9));
+
+
+
+
 
 
     }

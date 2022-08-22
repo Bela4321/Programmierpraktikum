@@ -38,7 +38,7 @@ public class MyGraph implements Graph {
 
     public void addEdge(String line) {
         if (line.isEmpty()) return;
-        String[] split = line.split(" ");
+        String[] split = line.split("[ \t]");
         int from = Integer.parseInt(split[0]);
         int to = Integer.parseInt(split[1]);
         addEdge(from, to);
@@ -118,8 +118,14 @@ public class MyGraph implements Graph {
     @Override
     public MyGraph getCopy() {
         MyGraph copiedGraph = new MyGraph();
-        copiedGraph.AL = (HashMap<Integer, List<Integer>>) AL.clone();
-        copiedGraph.nodes = new HashMap<>(nodes);
+        copiedGraph.AL = new HashMap<>();
+        for (Integer key : AL.keySet()) {
+            copiedGraph.AL.put(key, new ArrayList<>(AL.get(key)));
+        }
+        copiedGraph.nodes =  new HashMap<>();
+        for (Integer key : nodes.keySet()) {
+            copiedGraph.nodes.put(key, nodes.get(key));
+        }
         return copiedGraph;
         }
 
@@ -155,7 +161,7 @@ public class MyGraph implements Graph {
             if (s.equals("")){
                 return;
             }
-            Arrays.stream(s.split(" ")).map(s1->Integer.parseInt(s1)).forEach(s1->{if (s1>max){max=s1;}});
+            Arrays.stream(s.split("[ \t]")).map(s1->Integer.parseInt(s1)).forEach(s1->{if (s1>max){max=s1;}});
         }
     }
 }
