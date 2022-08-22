@@ -34,6 +34,7 @@ public class MyGraph implements Graph {
     }
 
     public void addEdge(String line) {
+        if (line.isEmpty()) return;
         String[] split = line.split(" ");
         int from = Integer.parseInt(split[0]);
         int to = Integer.parseInt(split[1]);
@@ -135,6 +136,9 @@ public class MyGraph implements Graph {
 
         @Override
         public void accept(String s) {
+            if (s.equals("")){
+                return;
+            }
             Arrays.stream(s.split(" ")).map(s1->Integer.parseInt(s1)).forEach(s1->{if (s1>max){max=s1;}});
         }
     }

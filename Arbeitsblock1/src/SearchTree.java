@@ -4,17 +4,25 @@ public class SearchTree {
         MyGraph g;
 
     }
-    private boolean solve(Instance i) {
+    private boolean solve(Instance i) throws Exception {
+        //simplify
+        removeSingletonsv(i);
+        removeDegone(i);
+        removeHighDeg(i);
+
         if (i.limit < 0) {
             return false;
         }
         if (i.g.getEdgeCount() == 0) {
             return true;
         }
+
+
+
         //G besitzt mindestens eine Kante {u, v}
         //get any edge
-        int e1;
-        int e2;
+        int e1=-1;
+        int e2=-1;
         for (int key:i.g.AL.keySet()){
             if (i.g.AL.get(key)!=null ||i.g.AL.get(key).size()!=0){
                 e1=key;
@@ -22,17 +30,19 @@ public class SearchTree {
                 break;
             }
         }
-        //simplify
-        removeSingletonsv(i);
-        removeDegone(i);
-        removeHighDeg(i);
+        if (e1==-1||e2==-1){
+            throw new Exception("Graph is not empty but empty?");
+        }
 
         //new instances
         Instance i1 = new Instance();
         i1.g= i.g.getCopy();
+        i1.g.deleteVertex(e1);
         i1.limit= i.limit-1;
+
         Instance i2 = new Instance();
         i2.g= i.g.getCopy();
+        i2.g.deleteVertex(e2);
         i2.limit= i.limit-1;
 
 
@@ -49,18 +59,21 @@ public class SearchTree {
     }
 
 
-    public int solve(MyGraph g) {
-        int k=0;
+    public int solve(MyGraph g) throws Exception {
+        int k=g.size()+1;
         Instance i=new Instance();
         i.g=g;
         i.limit=k;
-        while (!solve(i)){
-            i.limit++;
+        while (k>=0){
+            i.limit=--k;
+            if (solve(i)){
+                return k;
+            }
         }
-        return i.limit;
+        return k;
     }
 
-    public void insightSolve(MyGraph g){
+    public void insightSolve(MyGraph g) throws Exception {
         int v=g.size();
         int e =g.getEdgeCount();
         int k;
@@ -77,25 +90,25 @@ public class SearchTree {
     }
 
     public void removeSingletonsv (Instance i){
-        for (int vertex: i.g.nodes) {
-            if(i.g.AL.get(vertex)==null||i.g.AL.get(vertex).size()==0) {
-                i.g.deleteVertex(vertex);
+        for (int j=0;j<i.g.nodes.size();j++) {
+            if(i.g.AL.get(i.g.nodes.get(j))==null||i.g.AL.get(i.g.nodes.get(j)).size()==0) {
+                i.g.deleteVertex(i.g.nodes.get(j));
                 i.limit--;
             }
         }
     }
     public void removeDegone(Instance i){
-        for (int vertex: i.g.nodes) {
-            if(i.g.degree(vertex)==1) {
-                i.g.deleteVertex(i.g.AL.get(vertex).get(0));
+        for (int j=0;j<i.g.nodes.size();j++){
+            if(i.g.degree(i.g.nodes.get(j))==1) {
+                i.g.deleteVertex(i.g.AL.get(i.g.nodes.get(j)).get(0));
                 i.limit--;
             }
         }
     }
     public void removeHighDeg(Instance i) {
-        for (int vertex: i.g.nodes) {
-            if(i.g.degree(vertex)>i.limit) {
-                i.g.deleteVertex(i.g.AL.get(vertex).get(0));
+        for (int j=0;j<i.g.nodes.size();j++) {
+            if(i.g.degree(i.g.nodes.get(j))>i.limit) {
+                i.g.deleteVertex(i.g.AL.get(i.g.nodes.get(j)).get(0));
                 i.limit--;
             }
         }
