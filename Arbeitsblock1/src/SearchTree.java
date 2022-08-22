@@ -1,5 +1,3 @@
-import java.net.SocketTimeoutException;
-
 public class SearchTree {
     public class Instance {
         int limit;
@@ -10,7 +8,7 @@ public class SearchTree {
         if (i.limit < 0) {
             return false;
         }
-        if (i.g.nodes.size() == 0) {
+        if (i.g.getEdgeCount() == 0) {
             return true;
         }
         //G besitzt mindestens eine Kante {u, v}
@@ -24,6 +22,11 @@ public class SearchTree {
                 break;
             }
         }
+        //simplify
+        removeSingletonsv(i);
+        removeDegone(i);
+        removeHighDeg(i);
+
         //new instances
         Instance i1 = new Instance();
         i1.g= i.g.getCopy();
@@ -73,17 +76,27 @@ public class SearchTree {
         System.out.printf("Rumtime = %.5f s",newTime);
     }
 
-    public void removeSingletonsv (MyGraph graph){
-        for (int vertex: graph.nodes) {
-            if(graph.AL.get(vertex)==null||graph.AL.get(vertex).size()==0) {
-                graph.deleteVertex(vertex);
+    public void removeSingletonsv (Instance i){
+        for (int vertex: i.g.nodes) {
+            if(i.g.AL.get(vertex)==null||i.g.AL.get(vertex).size()==0) {
+                i.g.deleteVertex(vertex);
+                i.limit--;
             }
         }
     }
-    public void removeDegone(MyGraph g){
-        for (int vertex: g.nodes) {
-            if(g.degree(vertex)==1) {
-                g.deleteVertex(g.AL.get(vertex).get(0));
+    public void removeDegone(Instance i){
+        for (int vertex: i.g.nodes) {
+            if(i.g.degree(vertex)==1) {
+                i.g.deleteVertex(i.g.AL.get(vertex).get(0));
+                i.limit--;
+            }
+        }
+    }
+    public void removeHighDeg(Instance i) {
+        for (int vertex: i.g.nodes) {
+            if(i.g.degree(vertex)>i.limit) {
+                i.g.deleteVertex(i.g.AL.get(vertex).get(0));
+                i.limit--;
             }
         }
     }
