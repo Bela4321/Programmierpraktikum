@@ -131,7 +131,9 @@ public class MyGraph implements Graph {
 
     @Override
     public List<Integer> getNeighbors(Integer v) {
-        return AL.get(v);
+        List<Integer> neighbours = new ArrayList<>();
+        neighbours.addAll(AL.get(v));
+        return neighbours;
         }
 
     @Override

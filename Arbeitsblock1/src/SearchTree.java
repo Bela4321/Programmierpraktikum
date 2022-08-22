@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class SearchTree {
     public class Instance {
         int limit;
@@ -25,15 +27,13 @@ public class SearchTree {
         //G besitzt mindestens eine Kante {u, v}
         //get any edge
         int e1=-1;
-        int e2=-1;
         for (int key:i.g.AL.keySet()){
             if (i.g.AL.get(key)!=null &&i.g.AL.get(key).size()!=0){
                 e1=key;
-                e2=i.g.AL.get(key).get(0);
                 break;
             }
         }
-        if (e1==-1||e2==-1){
+        if (e1==-1){
             throw new Exception("Graph is not empty but empty?");
         }
 
@@ -45,7 +45,9 @@ public class SearchTree {
 
         Instance i2 = new Instance();
         i2.g= i.g.getCopy();
-        i2.g.deleteVertex(e2);
+        for (int node:i2.g.getNeighbors(e1)){
+            i2.g.deleteVertex(node);
+        }
         i2.limit= i.limit-1;
 
 
@@ -83,11 +85,11 @@ public class SearchTree {
         time =System.nanoTime()-time;
         double newTime=time*Math.pow(10,-9);
 
-        System.out.println("------------------------------");
         System.out.println("|V| = "+v);
         System.out.println("|E| = "+e);
         System.out.println("k = "+k);
         System.out.printf("Rumtime = %.5fs\n",newTime);
+        System.out.println("------------------------------");
     }
 
     public void removeSingletonsv (Instance i){
