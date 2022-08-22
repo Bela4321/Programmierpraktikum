@@ -60,12 +60,18 @@ public class SearchTree {
         Instance i=new Instance();
         i.g=g.getCopy();
         i.limit=k;
-        while (!solve(i)){
-            k++;
+        int[] stepsizes= {1000,100,10,1};
+        for (int step:stepsizes){
+            while (!solve(i)){
+                k+=step;
+                i.limit=k;
+                i.g=g.getCopy();
+            }
+            k-=step;
             i.limit=k;
             i.g=g.getCopy();
         }
-        return k;
+        return k+1;
     }
 
     public void insightSolve(MyGraph g) throws Exception {

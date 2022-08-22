@@ -142,7 +142,7 @@ public class MyGraph implements Graph {
     @Override
     public int getEdgeCount() {
         int sum = 0;
-        for (Integer node:nodes.keySet()){
+        for (Integer node:AL.keySet()){
             sum += AL.get(node).size();
         }
         return sum/2;
