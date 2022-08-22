@@ -1,64 +1,68 @@
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class MyGraph implements Graph {
-        List<Integer> nodes;
-        HashMap<Integer,List<Integer>> AL;
+    List<Integer> nodes;
+    HashMap<Integer,List<Integer>> AL;
 
-        public MyGraph(){
-            nodes= new ArrayList<>();
-            AL= new HashMap<>();
+    public MyGraph(){
+        nodes= new ArrayList<>();
+        AL= new HashMap<>();
+    }
+    public MyGraph(Integer i){
+        nodes= new ArrayList<>();
+        AL= new HashMap<>();
+        for (int j =1;j<=i;j++){
+            nodes.add(j);
         }
-
-        public MyGraph(Integer i){
-            nodes= new ArrayList<>();
-            AL= new HashMap<>();
-            for (int j =1;j<=i;j++){
-                nodes.add(j);
-            }
-        }
-
-        public MyGraph (String filename) throws FileNotFoundException {
-        File file = new File(filename);
+    }
+    public MyGraph (File file) throws IOException {
         BufferedReader graphReader = new BufferedReader(new FileReader(file));
-        MyGraph graph = new MyGraph();
-        graphReader.lines().forEach((String string) -> {
-            String[] parts = string.split(" ");
-            int I1 = Integer.parseInt(parts[0]);
-            int I2 = Integer.parseInt(parts[1]);
-            graph.addEdge(I1, I2);
-        });
+        FindMax findMax = new FindMax();
+        graphReader.lines().forEach(findMax);
+
+        nodes= new ArrayList<>();
+        AL= new HashMap<>();
+        for (int j =1;j<=findMax.max;j++){
+            nodes.add(j);
+        }
+        graphReader = new BufferedReader(new FileReader(file));
+        graphReader.lines().forEach(this::addEdge);
     }
 
-        public void addVertex(Integer i){
-            if (nodes.contains(i)){
-                return;
-            } else {
-                nodes.add(i);
-                AL.put(i,new ArrayList<>());
-            }
-        }
+    public void addEdge(String line) {
+        String[] split = line.split(" ");
+        int from = Integer.parseInt(split[0]);
+        int to = Integer.parseInt(split[1]);
+        addEdge(from, to);
+    }
 
-        public void addEdge(Integer i, Integer j) {
-            if (!AL.containsKey(i)){
-                AL.put(i,new ArrayList<>());
-                AL.get(i).add(j);
-            } else {
-                AL.get(i).add(j);
-            }
-            if (!AL.containsKey(j)){
-                AL.put(j,new ArrayList<>());
-                AL.get(j).add(i);
-            } else {
-                AL.get(j).add(i);
-            }
+
+    public void addVertex(Integer i){
+        if (nodes.contains(i)){
+            return;
+        } else {
+            nodes.add(i);
+            AL.put(i,new ArrayList<>());
         }
+    }
+    public void addEdge(Integer i, Integer j) {
+        if (!AL.containsKey(i)){
+            AL.put(i,new ArrayList<>());
+            AL.get(i).add(j);
+        } else {
+            AL.get(i).add(j);
+        }
+        if (!AL.containsKey(j)){
+            AL.put(j,new ArrayList<>());
+            AL.get(j).add(i);
+        } else {
+            AL.get(j).add(i);
+        }
+    }
 
     @Override
     public void deleteVertex(Integer v) {
