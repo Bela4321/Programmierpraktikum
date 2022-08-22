@@ -24,7 +24,7 @@ public class MyGraph implements Graph {
             }
         }
 
-    public MyGraph (String filename) throws FileNotFoundException {
+        public MyGraph (String filename) throws FileNotFoundException {
         File file = new File(filename);
         BufferedReader graphReader = new BufferedReader(new FileReader(file));
         MyGraph graph = new MyGraph();
@@ -41,6 +41,7 @@ public class MyGraph implements Graph {
                 return;
             } else {
                 nodes.add(i);
+                AL.put(i,new ArrayList<>());
             }
         }
 

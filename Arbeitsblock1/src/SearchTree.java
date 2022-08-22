@@ -80,5 +80,12 @@ public class SearchTree {
             }
         }
     }
+    public void removeDegone(MyGraph g){
+        for (int vertex: g.nodes) {
+            if(g.degree(vertex)==1) {
+                g.deleteVertex(g.AL.get(vertex).get(0));
+            }
+        }
+    }
 
 }
