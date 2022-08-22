@@ -13,7 +13,7 @@ public class SearchTree {
         if (i.limit < 0) {
             return false;
         }
-        if (i.g.getEdgeCount() == 0) {
+        if (i.g.getEdgeCount() <= 0) {
             return true;
         }
 
@@ -50,13 +50,6 @@ public class SearchTree {
 
     }
 
-    private void removeVertex(Instance i, Integer vertex){
-        for (Integer neighbour :i.g.AL.get(vertex)) {
-            i.g.AL.get(neighbour).remove(vertex);
-        }
-        i.g.AL.put(vertex, null);
-        i.g.nodes.remove(vertex);
-    }
 
 
     public int solve(MyGraph g) throws Exception {
@@ -65,7 +58,8 @@ public class SearchTree {
         i.g=g.getCopy();
         i.limit=k;
         while (!solve(i)){
-            i.limit=++k;
+            k++;
+            i.limit=k;
         }
         return k;
     }
@@ -87,25 +81,26 @@ public class SearchTree {
     }
 
     public void removeSingletonsv (Instance i){
-        for (int j=0;j<i.g.nodes.size();j++) {
-            if(i.g.AL.get(i.g.nodes.get(j))==null||i.g.AL.get(i.g.nodes.get(j)).size()==0) {
-                i.g.deleteVertex(i.g.nodes.get(j));
+        for (int key:i.g.AL.keySet()){
+            if (i.g.AL.get(key).size()==0){
+                i.g.deleteVertex(key);
                 i.limit--;
             }
         }
     }
     public void removeDegone(Instance i){
-        for (int j=0;j<i.g.nodes.size();j++){
-            if(i.g.degree(i.g.nodes.get(j))==1) {
-                i.g.deleteVertex(i.g.AL.get(i.g.nodes.get(j)).get(0));
+
+        for (int key:i.g.AL.keySet()){
+            if(i.g.degree(key)==1) {
+                i.g.deleteVertex(i.g.AL.get(key).get(0));
                 i.limit--;
             }
         }
     }
     public void removeHighDeg(Instance i) {
-        for (int j=0;j<i.g.nodes.size();j++) {
-            if(i.g.degree(i.g.nodes.get(j))>i.limit) {
-                i.g.deleteVertex(i.g.AL.get(i.g.nodes.get(j)).get(0));
+        for (int key:i.g.AL.keySet()) {
+            if(i.g.degree(key)>i.limit) {
+                i.g.deleteVertex(key);
                 i.limit--;
             }
         }

@@ -5,18 +5,22 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class MyGraph implements Graph {
-    List<Integer> nodes;
+    Map<Integer, Boolean> nodes = new HashMap<Integer, Boolean>(){
+        public Boolean get(Integer key) {
+            if(! containsKey(key))
+                return false;
+            return super.get(key);
+        }
+    };
     HashMap<Integer,List<Integer>> AL;
 
     public MyGraph(){
-        nodes= new ArrayList<>();
         AL= new HashMap<>();
     }
     public MyGraph(Integer i){
-        nodes= new ArrayList<>();
         AL= new HashMap<>();
         for (int j =1;j<=i;j++){
-            nodes.add(j);
+            nodes.put(j,true);
         }
     }
     public MyGraph (File file) throws IOException {
@@ -24,10 +28,9 @@ public class MyGraph implements Graph {
         FindMax findMax = new FindMax();
         graphReader.lines().forEach(findMax);
 
-        nodes= new ArrayList<>();
         AL= new HashMap<>();
         for (int j =1;j<=findMax.max;j++){
-            nodes.add(j);
+            nodes.put(j,true);
         }
         graphReader = new BufferedReader(new FileReader(file));
         graphReader.lines().forEach(this::addEdge);
@@ -43,10 +46,10 @@ public class MyGraph implements Graph {
 
 
     public void addVertex(Integer i){
-        if (nodes.contains(i)){
+        if (nodes.get(i)){
             return;
         } else {
-            nodes.add(i);
+            nodes.put(i,true);
             AL.put(i,new ArrayList<>());
         }
     }
@@ -67,7 +70,7 @@ public class MyGraph implements Graph {
 
     @Override
     public void deleteVertex(Integer v) {
-        if (nodes.contains(v)){
+        if (contains(v)){
             nodes.remove(v);
         } else {
             return;
@@ -76,6 +79,7 @@ public class MyGraph implements Graph {
         for (Integer neighbour : AL.get(v)) {
             AL.get(neighbour).remove(v);
         }
+        AL.get(v).clear();
     }
 
     public void deleteEdge(Integer i, Integer j) {
@@ -85,12 +89,20 @@ public class MyGraph implements Graph {
 
     @Override
     public boolean contains(Integer v) {
-        return nodes.contains(v);
+        if (nodes.get(v)==null){
+            return false;
+        } else {
+            return nodes.get(v);
+        }
     }
 
     @Override
     public int degree(Integer v) {
-        return AL.get(v).size();
+        if (AL.get(v)==null){
+            return 0;
+        } else {
+            return AL.get(v).size();
+        }
     }
 
     @Override
@@ -107,7 +119,7 @@ public class MyGraph implements Graph {
     public MyGraph getCopy() {
         MyGraph copiedGraph = new MyGraph();
         copiedGraph.AL = (HashMap<Integer, List<Integer>>) AL.clone();
-        copiedGraph.nodes = new ArrayList<>(nodes);
+        copiedGraph.nodes = new HashMap<>(nodes);
         return copiedGraph;
         }
 
@@ -124,7 +136,7 @@ public class MyGraph implements Graph {
     @Override
     public int getEdgeCount() {
         int sum = 0;
-        for (Integer node:nodes){
+        for (Integer node:nodes.keySet()){
             sum += AL.get(node).size();
         }
         return sum/2;
@@ -132,7 +144,7 @@ public class MyGraph implements Graph {
 
     @Override
     public Set<Integer> getVertices() {
-            return nodes.stream().collect(Collectors.toSet());
+            return nodes.keySet().stream().collect(Collectors.toSet());
     }
 
     class FindMax implements Consumer<String> {

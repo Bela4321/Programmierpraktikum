@@ -14,7 +14,7 @@ public class Main {
 
         MyGraph g = new MyGraph(testFile);
         long time= System.nanoTime();
-        st.solve(g);
+        System.out.println(st.solve(g));
         time =System.nanoTime()-time;
         System.out.println(time*Math.pow(10,-9));
 
