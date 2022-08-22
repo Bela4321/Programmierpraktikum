@@ -60,7 +60,7 @@ public class SearchTree {
         Instance i=new Instance();
         i.g=g.getCopy();
         i.limit=k;
-        int[] stepsizes= {1000,100,10,1};
+        int[] stepsizes= {10,1};
         for (int step:stepsizes){
             while (!solve(i)){
                 k+=step;
@@ -98,7 +98,6 @@ public class SearchTree {
         }
     }
     public void removeDegone(Instance i){
-
         for (int key:i.g.AL.keySet()){
             if(i.g.degree(key)==1) {
                 i.g.deleteVertex(i.g.AL.get(key).get(0));
@@ -114,5 +113,4 @@ public class SearchTree {
             }
         }
     }
-
 }
