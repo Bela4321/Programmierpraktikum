@@ -2,24 +2,28 @@ public class SearchTree {
     public class Instance {
         int limit;
         MyGraph g;
+        int k;
 
     }
     private boolean solve(Instance i) {
-        int x = 0;
         if (i.limit < 0) {
             return false;
         }
-        if (i.g.nodes == null) {
+        if (i.g.nodes.size() == 0) {
             return true;
         }
         //G besitzt mindestens eine Kante {u, v}
-        i.g.deleteVertex(i.g.nodes.get(x));
+        //get any edge
 
-        return true;
+
+
+
+
+        return false;
 
     }
 
-    public int solve(vertexcover.Graph g) {
+    public int solve(Graph g) {
         return 0;
     }
 

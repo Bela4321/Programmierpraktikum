@@ -1,4 +1,3 @@
-import vertexcover.Graph;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +7,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class MyGraph implements vertexcover.Graph {
+public class MyGraph implements Graph {
         List<Integer> nodes;
         HashMap<Integer,List<Integer>> AL;
 
@@ -97,8 +96,8 @@ public class MyGraph implements vertexcover.Graph {
     @Override
     public MyGraph getCopy() {
         MyGraph copiedGraph = new MyGraph();
-        copiedGraph.AL = AL;
-        copiedGraph.nodes = nodes;
+        copiedGraph.AL = (HashMap<Integer, List<Integer>>) AL.clone();
+        copiedGraph.nodes = new ArrayList<>(nodes);
         return copiedGraph;
         }
 
@@ -115,8 +114,8 @@ public class MyGraph implements vertexcover.Graph {
     @Override
     public int getEdgeCount() {
         int sum = 0;
-        for (int i = 0; i<nodes.size(); i++){
-            sum += AL.get(i).size();
+        for (Integer node:nodes){
+            sum += AL.get(node).size();
         }
         return sum/2;
     }
