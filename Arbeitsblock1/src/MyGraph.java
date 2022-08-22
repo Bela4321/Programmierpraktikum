@@ -72,6 +72,10 @@ public class MyGraph implements Graph {
         } else {
             return;
         }
+        // remove all edges from v
+        for (Integer neighbour : AL.get(v)) {
+            AL.get(neighbour).remove(v);
+        }
     }
 
     public void deleteEdge(Integer i, Integer j) {

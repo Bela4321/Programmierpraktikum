@@ -60,15 +60,12 @@ public class SearchTree {
 
 
     public int solve(MyGraph g) throws Exception {
-        int k=g.size()+1;
+        int k=0;
         Instance i=new Instance();
-        i.g=g;
+        i.g=g.getCopy();
         i.limit=k;
-        while (k>=0){
-            i.limit=--k;
-            if (solve(i)){
-                return k;
-            }
+        while (!solve(i)){
+            i.limit=++k;
         }
         return k;
     }
