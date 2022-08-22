@@ -87,7 +87,7 @@ public class SearchTree {
         System.out.println("|V| = "+v);
         System.out.println("|E| = "+e);
         System.out.println("k = "+k);
-        System.out.printf("Rumtime = %.5f s",newTime);
+        System.out.printf("Rumtime = %.5fs\n",newTime);
     }
 
     public void removeSingletonsv (Instance i){
