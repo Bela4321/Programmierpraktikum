@@ -1,4 +1,3 @@
-import java.util.List;
 
 public class SearchTree {
     public class Instance {
@@ -6,7 +5,12 @@ public class SearchTree {
         MyGraph g;
 
     }
-    private boolean solve(Instance i) throws Exception {
+    private boolean solve(Instance i, long time) throws Exception {
+        //check timing
+        if (System.nanoTime()-time>(long)60*(long)1000000000){
+            return true;
+        }
+
         if (i.g.getEdgeCount() <= i.limit) {
             return true;
         }
@@ -21,9 +25,6 @@ public class SearchTree {
         if (i.g.getEdgeCount() <= 0) {
             return true;
         }
-
-
-
         //G besitzt mindestens eine Kante {u, v}
         //get any edge
         int e1=-1;
@@ -45,26 +46,26 @@ public class SearchTree {
 
         Instance i2 = new Instance();
         i2.g= i.g.getCopy();
+        i2.limit= i.limit-i2.g.getNeighbors(e1).size();
+
         for (int node:i2.g.getNeighbors(e1)){
             i2.g.deleteVertex(node);
         }
-        i2.limit= i.limit-1;
 
-
-        return solve(i1)||solve(i2);
+        return solve(i1, time)||solve(i2, time);
 
     }
 
 
 
-    public int solve(MyGraph g) throws Exception {
+    public int solve(MyGraph g, long time) throws Exception {
         int k=0;
         Instance i=new Instance();
         i.g=g.getCopy();
         i.limit=k;
         int[] stepsizes= {10,1};
         for (int step:stepsizes){
-            while (!solve(i)){
+            while (!solve(i, time)){
                 k+=step;
                 i.limit=k;
                 i.g=g.getCopy();
@@ -81,9 +82,12 @@ public class SearchTree {
         int e =g.getEdgeCount();
         int k;
         long time= System.nanoTime();
-        k= solve(g);
+        k= solve(g, time);
         time =System.nanoTime()-time;
         double newTime=time*Math.pow(10,-9);
+        if (newTime>60){
+            newTime=-1;
+        }
 
         System.out.println("|V| = "+v);
         System.out.println("|E| = "+e);
