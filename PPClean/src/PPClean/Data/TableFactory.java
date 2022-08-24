@@ -1,7 +1,7 @@
 package PPClean.Data;
 
-import static src.PPClean.Configuration.DATA_SEPARATOR;
-import static src.PPClean.Configuration.PATH_INPUT_DATA;
+import static PPClean.Configuration.DATA_SEPARATOR;
+import static PPClean.Configuration.PATH_INPUT_DATA;
 
 /**
  * Factory to produce instances of Table

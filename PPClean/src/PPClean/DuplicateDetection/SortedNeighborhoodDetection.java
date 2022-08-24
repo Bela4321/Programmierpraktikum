@@ -3,12 +3,9 @@ package PPClean.DuplicateDetection;
 import PPClean.Data.Duplicate;
 import PPClean.Data.Record;
 import PPClean.Data.Table;
-import src.PPClean.Similarity.RecordSimilarity;
+import PPClean.Similarity.RecordSimilarity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Duplicate detection algorithm which first sorts the Table (according to a key)
@@ -43,8 +40,25 @@ public class SortedNeighborhoodDetection implements DuplicateDetection {
         Set<Duplicate> duplicates = new HashSet<>();
         int numComparisons = 0;
         // BEGIN SOLUTION
+        List<Record> records = table.getData();
+        //findkeys
+        Map<Record,String> keyTable = new HashMap<>();
+        for (Record record:records) {
+            record.generateKey(keyComponents);
+            keyTable.put(record,record.getKey());
+        }
+        records.sort((Record a, Record b)->a.getKey().compareTo(b.getKey()));
 
-
+        //sliding window
+        for (int i = 0; i < records.size(); i++) {
+            for (int j = 1; j < i+windowSize&&j+i<records.size(); j++) {
+                numComparisons++;
+                if (recSim.compare(records.get(i),records.get(i+j))>threshold){
+                    Duplicate newDup = new Duplicate(records.get(i),records.get(i+j));
+                    duplicates.add(newDup);
+                }
+            }
+        }
 
         // END SOLUTION
         System.out.printf("Sorted Neighborhood Detection found %d duplicates after %d comparisons%n", duplicates.size(), numComparisons);

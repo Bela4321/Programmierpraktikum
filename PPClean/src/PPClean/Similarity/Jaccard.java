@@ -29,8 +29,21 @@ public class Jaccard implements StringSimilarity {
         Set<String> ngramsX = new HashSet<>();
         Set<String> ngramsY = new HashSet<>();
         // BEGIN SOLUTION
-
-
+        for (int k=0;k+n<=x.length();k++){
+            ngramsX.add(x.substring(k,k+n));
+        }
+        for (int k=0;k+n<=y.length();k++){
+            ngramsY.add(y.substring(k,k+n));
+        }
+        int overlapCount=0;
+        Set<String> overlap= new HashSet<>();
+        for (String key:ngramsX) {
+            if (ngramsY.contains(key)&&!overlap.contains(key)){
+                overlapCount++;
+                overlap.add(key);
+            }
+        }
+        res=(double)overlapCount/(ngramsX.size()+ngramsY.size()-overlapCount);
 
         // END SOLUTION
         return res;

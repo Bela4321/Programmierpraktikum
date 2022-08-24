@@ -27,8 +27,9 @@ public class SingleAttributeEquality implements RecordSimilarity {
         double res = 0;
         // BEGIN SOLUTION
 
-
-
+        if (r1.getContent().get(attributeIndex).equals(r2.getContent().get(attributeIndex))){
+            res=1;
+        }
         // END SOLUTION
         return res;
     }

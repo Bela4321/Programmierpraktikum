@@ -2,7 +2,7 @@ package PPClean.Similarity;
 
 import PPClean.Data.Record;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Record similarity for comparing two Records attribute by attribute either with {@link Levenshtein} or {@link Jaccard}
@@ -35,9 +35,21 @@ public class Hybrid implements RecordSimilarity {
     @Override
     public double compare(Record r1, Record r2) {
         double res = 0;
+
         // BEGIN SOLUTION
-
-
+        List<Double> resL = new ArrayList<>();
+        for (int i=0;i<r1.getContent().size();i++) {
+            if ("L".equals(policies.get(i))) {
+                resL.add(levenshtein.compare(r1.getContent().get(i),r2.getContent().get(i)));
+            } else if ("J".equals(policies.get(i))) {
+                resL.add(jaccard.compare(r1.getContent().get(i),r2.getContent().get(i)));
+            }
+        }
+        double sum=0;
+        for (double num:resL) {
+            sum+=num;
+        }
+        res=sum/resL.size();
 
         // END SOLUTION
         return res;
