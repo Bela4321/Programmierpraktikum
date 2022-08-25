@@ -37,7 +37,7 @@ public class NaiveDetection implements DuplicateDetection {
         for (int i=0;i<records.size();i++){
             for (int j=i+1;j<records.size();j++){
                 numComparisons++;
-                if (recSim.compare(records.get(i),records.get(j))>threshold){
+                if (recSim.compare(records.get(i),records.get(j))>=threshold){
                     Duplicate newDup = new Duplicate(records.get(i),records.get(j));
                     duplicates.add(newDup);
                 }
