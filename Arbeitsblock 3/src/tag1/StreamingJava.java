@@ -1,6 +1,8 @@
 package tag1;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -12,7 +14,9 @@ public class StreamingJava {
     public static <E> Stream<E> flatStreamOf(List<List<E>> list) {
         // TODO
         //return onedimensional stream
-        return list.stream().flatMap(x -> x.stream());
+        return list
+                .stream()
+                .flatMap(Collection::stream);
     }
 
     // Aufgabe 2) b)
@@ -26,21 +30,26 @@ public class StreamingJava {
     public static <E extends Comparable<? super E>> E minOf(List<List<E>> list) {
         // TODO
         //return min value of list
-        return list.stream().flatMap(x -> x.stream()).min(Comparator.naturalOrder()).get();
+        return list.stream().flatMap(x -> x.stream()).min(Comparator.naturalOrder()).orElseThrow();
     }
 
     // Aufgabe 2) d)
     public static <E> E lastWithOf(Stream<E> stream, Predicate<? super E> predicate) {
         // TODO
         //return last element of stream with predicate
-        return stream.filter(predicate).reduce((first, second) -> second).get();
+        return stream.filter(predicate).reduce(null, (first, second) -> second);
     }
 
     // Aufgabe 2) e)
     public static <E> Set<E> findOfCount(Stream<E> stream, int count) {
         // TODO
         //return set of elements with count
-        return stream.collect(Collectors.groupingBy(x ->x , Collectors.counting())).entrySet().stream().filter(x -> x.getValue() == count).map(x -> x.getKey()).collect(Collectors.toSet());
+        return stream
+                .collect(Collectors.groupingBy(x ->x , Collectors.counting()))
+                .entrySet().stream()
+                .filter(x -> x.getValue() == count)
+                .map(x -> x.getKey())
+                .collect(Collectors.toSet());
     }
 
     // Aufgabe 2) f)
@@ -77,6 +86,12 @@ public class StreamingJava {
     //  1. Create record "NaturalGasBilling".
     //  2. Implement static method: "Stream<NaturalGasBilling> orderByInvoiceDateDesc(Stream<String> stream)".
 
+    static record NaturalGasBilling(String invoiceDate, String fromDate, String toDate, int billingDays, double billedGJ, double basicCharge, double deliveryCharges, double storageAndTransport, double commodityCharges, double tax, double cleanEnergyLevy, double carbonTax, double amount) {
+        public static Stream<NaturalGasBilling> orderByInvoiceDateDesc(Stream<String> stream) {
+            return stream.map(x -> x.split(";")).map(x -> new NaturalGasBilling(x[0], x[1], x[2], Integer.parseInt(x[3]), Double.parseDouble(x[4]), Double.parseDouble(x[5]), Double.parseDouble(x[6]), Double.parseDouble(x[7]), Double.parseDouble(x[8]), Double.parseDouble(x[9]), Double.parseDouble(x[10]), Double.parseDouble(x[11]), Double.parseDouble(x[12]))).sorted(Comparator.comparing(NaturalGasBilling::invoiceDate).reversed());
+        }
+    }
+
     // Aufgabe 3) e)
     // TODO: Implement object method: "Stream<Byte> toBytes()" for record "NaturalGasBilling".
 
@@ -90,8 +105,21 @@ public class StreamingJava {
 
     // Aufgabe 3) h)
     public static Stream<File> findFilesWith(String dir, String startsWith, String endsWith, int maxFiles) {
-        // TODO
+        File folder = new File(dir);
+        return Arrays.stream(folder.listFiles()).filter(x -> x.getName().startsWith(startsWith) && x.getName().endsWith(endsWith)).sorted(Comparator.comparing(File::length)).limit(maxFiles);
+    }
 
-        return null;
+    private static void walkHelper(File file){
+        if (file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                walkHelper(f);
+            }
+        } else if (file.getName().endsWith(".java")) {
+            System.out.println(file.getName());
+        }
+    }
+
+    public static void main(String[] args) {
+        walkHelper(new File("Arbeitsblock 3"));
     }
 }
