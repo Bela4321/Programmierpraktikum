@@ -24,10 +24,15 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
 
     CombinationType combinationType;
     List<CardDeck52.Card> combinationCards;
+    List<CardDeck52.Card> hand;
+    List<CardDeck52.Card> tableCards;
 
     List<CardDeck52.Card> kicker = new ArrayList<>();
     // a)
     TexasHoldemCombination(List<CardDeck52.Card> tableCards, TexasHoldemHand hand) {
+        this.tableCards = new ArrayList<>(tableCards);
+        this.hand= new ArrayList<>(Arrays.stream(hand.get()).toList());
+
         this.combinationCards = new ArrayList<>();
         List<CardDeck52.Card> list = new ArrayList<>(tableCards);
         for (CardDeck52.Card card : hand.get()) {
@@ -204,6 +209,7 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
                 }
                 if (list.get(i).value!=tripletKey&&freeKicker>0) {
                     kicker.add(list.get(i));
+                    combinationCards.add(list.get(i));
                     freeKicker--;
                 }
             }
@@ -249,6 +255,7 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
                 }
             }
             kicker.add(addedKicker);
+            combinationCards.add(addedKicker);
             return;
         }
 
@@ -264,8 +271,9 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
                 }
             }
             for (int i =list.size()-1; i>=0; i--){
-                if (list.get(i).value!=highestPair&&kicker.size()<3) {
+                if (list.get(i).value!=highestPair&&combinationCards.size()<5) {
                     kicker.add(0,list.get(i));
+                    combinationCards.add(list.get(i));
                     break;
                 }
             }
@@ -274,8 +282,9 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
 
         //High Card
         combinationType= CombinationType.HighCard;
-        for (int i =list.size()-1; i>=0; i--){
+        for (int i =list.size()-1; i>=list.size()-5&&i>=0; i--){
             kicker.add(list.get(i));
+            combinationCards.add(list.get(i));
         }
 
     }
@@ -290,7 +299,7 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
         } else if (this.combinationType.ordinal()<that.combinationType.ordinal()) {
             return -1;
         } else {
-            for (int i=0; i<this.kicker.size(); i++) {
+            for (int i=0; i<Math.min(this.kicker.size(),that.kicker.size()); i++) {
                 if (this.kicker.get(i).value>that.kicker.get(i).value) {
                     return 1;
                 } else if (this.kicker.get(i).value<that.kicker.get(i).value) {
@@ -305,7 +314,7 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
     private static class CombSup implements Supplier{
         CardDeck52 deck = new CardDeck52();
         Random r = new Random();
-        int[] sizes = {0,3,4,5};
+        int[] sizes = {/*0,3,4,*/5};
         /**
          * Gets a result.
          * @return a result
@@ -317,10 +326,10 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
             for (int i=0; i<size; i++) {
                 tableCards.add(deck.deal());
             }
-            deck.shuffle();
             TexasHoldemHand hand = new TexasHoldemHand();
             hand.takeDeal(deck.deal());
             hand.takeDeal(deck.deal());
+            deck.shuffle();
             return new TexasHoldemCombination(tableCards, hand);
         }
     }
@@ -359,7 +368,9 @@ public final class TexasHoldemCombination implements Comparable<TexasHoldemCombi
     @Override
     public String toString() {
         return "TexasHoldemCombination{" +
-                "combinationType=" + combinationType +
+                "hand=" + hand +
+                ", tableCards=" + tableCards +
+                ", combinationType=" + combinationType +
                 ", combinationCards=" + combinationCards +
                 '}';
     }

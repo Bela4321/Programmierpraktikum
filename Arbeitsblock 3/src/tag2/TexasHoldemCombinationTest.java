@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 import tag2.tools.CardDeck52;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -150,6 +153,18 @@ class TexasHoldemCombinationTest {
     void randTest(){
         Stream<TexasHoldemCombination> stream = TexasHoldemCombination.generate();
         stream.limit(10).sorted(TexasHoldemCombination::compareTo).forEach(System.out::println);
+    }
+
+    @Test
+    void pobTest() {
+        int number = 1000000;
+        Stream<TexasHoldemCombination> stream = TexasHoldemCombination.generate();
+        stream
+                .limit(number)
+                .collect(Collectors.groupingBy(x->x.combinationType, Collectors.counting()))
+                .entrySet()
+                .stream().sorted(Map.Entry.comparingByKey())
+                .forEach(x-> System.out.println(x.getKey() + ": " +String.format ("%.3f",(double)x.getValue()/number*100)+"%"));
     }
 }
 
