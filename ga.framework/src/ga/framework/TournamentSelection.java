@@ -20,6 +20,8 @@ public class TournamentSelection implements SelectionOperator {
         } else {
             return candidates.get(j);
         }
+
+
     }
 }
 

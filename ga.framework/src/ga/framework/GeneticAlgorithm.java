@@ -28,10 +28,20 @@ public class GeneticAlgorithm{
         this.maxGenerations = geneticAlgorithm.maxGenerations;
     }
 
-    public GeneticAlgorithm(){};
+    public GeneticAlgorithm(Problem problem, int populationSize, List<EvolutionaryOperator> evolutionaryOperator, FitnessEvaluator fitnessEvaluator, SurvivalOperator survivalOperator, SelectionOperator selectionOperator, int maxGenerations) {
+        this.problem = problem;
+        this.populationSize = populationSize;
+        this.evolutionaryOperator = evolutionaryOperator;
+        this.fitnessEvaluator = fitnessEvaluator;
+        this.survivalOperator = survivalOperator;
+        this.selectionOperator = selectionOperator;
+        this.maxGenerations = maxGenerations;
+    }
+
+    public GeneticAlgorithm(){}
 
     protected List<Solution> runOptimization() {
-        List<Solution> population = new ArrayList<Solution>();
+        List<Solution> population = new ArrayList<>();
         //initialisiere Startpopulation with createNewSolution
         for (int i = 0; i < populationSize; i++) {
             try {
@@ -46,13 +56,15 @@ public class GeneticAlgorithm{
             //zufälligen evolutionary Operater auswählen und anwenden mit evolve()
             Random r = new Random();
             EvolutionaryOperator evolutionaryOperator = this.evolutionaryOperator.get(r.nextInt(this.evolutionaryOperator.size()));
+            List<Solution> children= new ArrayList<>();
             for (int i = 0; i < populationSize; i++) {
                 try {
-                    population.add(evolutionaryOperator.evolve(selectionOperator.selectParent(population)));
+                    children.add(evolutionaryOperator.evolve(selectionOperator.selectParent(population)));
                 } catch (EvolutionException e) {
                     e.printStackTrace();
                 }
             }
+            population.addAll(children);
             //Fitness der Nachkommen mit evaluate bestimmen; hinzufügen zur Population
             fitnessEvaluator.evaluate(population);
             //Mit selectPopulation Population für nächste Iteration auswählen, bis das Limit erreicht ist
@@ -114,8 +126,8 @@ public class GeneticAlgorithm{
         hasSelOP performingSelectionWith(SelectionOperator operator){
             this.selectionOperator = operator;
             return new hasSelOP(this);
-        };
-        };
+        }
+    };
     };
 
     class hasSelOP extends GeneticAlgorithm{
@@ -132,8 +144,42 @@ public class GeneticAlgorithm{
         public hasAttributes(GeneticAlgorithm ga) {
             super(ga);
         }
-        public List<Solution> runOptimization(){
-        return super.runOptimization();
+        public List<Solution> runOptimization() {
+            List<Solution> population = new ArrayList<>();
+            //initialisiere Startpopulation with createNewSolution
+            for (int i = 0; i < populationSize; i++) {
+                try {
+                    population.add(problem.createNewSolution());
+                } catch (NoSolutionException e) {
+                    e.printStackTrace();
+                }
+            }
+            //evaluate fitness of population
+            fitnessEvaluator.evaluate(population);
+            for (int abc = 0; abc < maxGenerations; abc++) {
+                //zufälligen evolutionary Operater auswählen und anwenden mit evolve()
+                Random r = new Random();
+                EvolutionaryOperator evolutionaryOperator = this.evolutionaryOperator.get(r.nextInt(this.evolutionaryOperator.size()));
+                List<Solution> children= new ArrayList<>();
+                for (int i = 0; i < populationSize; i++) {
+                    try {
+                        children.add(evolutionaryOperator.evolve(selectionOperator.selectParent(population)));
+                    } catch (EvolutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+                population.addAll(children);
+                //Fitness der Nachkommen mit evaluate bestimmen; hinzufügen zur Population
+                fitnessEvaluator.evaluate(population);
+                //Mit selectPopulation Population für nächste Iteration auswählen, bis das Limit erreicht ist
+                try {
+                    population = survivalOperator.selectPopulation(population, populationSize);
+                } catch (SurvivalException e) {
+                    e.printStackTrace();
+                }
+            }
+            //return die Population der letzten Iteration
+            return population;
         };
 
         public static void main(String[] args) {
@@ -165,11 +211,11 @@ public class GeneticAlgorithm{
 
             List<Solution> res = ga
                     .solve(problem)
-                    .withPopulationSize(20)
+                    .withPopulationSize(10)
                     .evolvingSolutionsWith(evoOp)
                     .evaluatingSolutionsBy(fitEval)
                     .performingSelectionWith(selecOP)
-                    .stoppingAtEvolution(100)
+                    .stoppingAtEvolution(10)
                     .runOptimization();
         }
 }
