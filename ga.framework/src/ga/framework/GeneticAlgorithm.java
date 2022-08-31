@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GeneticAlgorithm{
+public class GeneticAlgorithm {
     Problem problem;
     int populationSize;
     List<EvolutionaryOperator> evolutionaryOperator;
     FitnessEvaluator fitnessEvaluator;
-    SurvivalOperator survivalOperator = new TopKSurvival(5);
+    SurvivalOperator survivalOperator;
     SelectionOperator selectionOperator;
     int maxGenerations;
 
@@ -28,6 +28,9 @@ public class GeneticAlgorithm{
         this.maxGenerations = geneticAlgorithm.maxGenerations;
     }
 
+    public GeneticAlgorithm(SurvivalOperator survivalOperator){
+        this.survivalOperator=survivalOperator;
+    }
     public GeneticAlgorithm(Problem problem, int populationSize, List<EvolutionaryOperator> evolutionaryOperator, FitnessEvaluator fitnessEvaluator, SurvivalOperator survivalOperator, SelectionOperator selectionOperator, int maxGenerations) {
         this.problem = problem;
         this.populationSize = populationSize;
@@ -38,9 +41,10 @@ public class GeneticAlgorithm{
         this.maxGenerations = maxGenerations;
     }
 
-    public GeneticAlgorithm(){}
+    public GeneticAlgorithm() {
+    }
 
-    protected List<Solution> runOptimization() {
+    /*protected List<Solution> runOptimization() {
         List<Solution> population = new ArrayList<>();
         //initialisiere Startpopulation with createNewSolution
         for (int i = 0; i < populationSize; i++) {
@@ -76,74 +80,100 @@ public class GeneticAlgorithm{
         }
         //return die Population der letzten Iteration
         return population;
-    }
+    }*/
 
-    hasProblem solve(Problem problem){
+    public hasProblem solve(Problem problem) {
         this.problem = problem;
         return new hasProblem(this);
-    };
+    }
 
-    class hasProblem extends GeneticAlgorithm{
+    ;
+
+    public class hasProblem extends GeneticAlgorithm {
         public hasProblem(GeneticAlgorithm ga) {
             super(ga);
         }
 
-        hasPopSize withPopulationSize(int size){
+        public hasPopSize withPopulationSize(int size) {
             this.populationSize = size;
             return new hasPopSize(this);
-        };
-    };
+        }
 
-    class hasPopSize extends GeneticAlgorithm{
+        ;
+    }
+
+    ;
+
+    public class hasPopSize extends GeneticAlgorithm {
         public hasPopSize(GeneticAlgorithm ga) {
             super(ga);
         }
-        hasEvoOP evolvingSolutionsWith(EvolutionaryOperator operator){
+
+        public hasEvoOP evolvingSolutionsWith(EvolutionaryOperator operator) {
             this.evolutionaryOperator = new ArrayList<EvolutionaryOperator>();
             this.evolutionaryOperator.add(operator);
             return new hasEvoOP(this);
-        };
-    };
+        }
 
-    class hasEvoOP extends GeneticAlgorithm{
+        ;
+    }
+
+    ;
+
+    public class hasEvoOP extends GeneticAlgorithm {
         public hasEvoOP(GeneticAlgorithm ga) {
             super(ga);
         }
-        hasFitEval evaluatingSolutionsBy(FitnessEvaluator evaluator){
+
+        public hasFitEval evaluatingSolutionsBy(FitnessEvaluator evaluator) {
             this.fitnessEvaluator = evaluator;
             return new hasFitEval(this);
-        };
-        hasEvoOP evolvingSolutionsWith(EvolutionaryOperator operator){
+        }
+
+        ;
+
+        public hasEvoOP evolvingSolutionsWith(EvolutionaryOperator operator) {
             this.evolutionaryOperator.add(operator);
             return new hasEvoOP(this);
-        };
-    };
+        }
 
-    class hasFitEval extends GeneticAlgorithm{
+        ;
+    }
+
+    ;
+
+    public class hasFitEval extends GeneticAlgorithm {
         public hasFitEval(GeneticAlgorithm ga) {
             super(ga);
         }
-        hasSelOP performingSelectionWith(SelectionOperator operator){
+
+        public hasSelOP performingSelectionWith(SelectionOperator operator) {
             this.selectionOperator = operator;
             return new hasSelOP(this);
         }
-    };
-    };
+    }
 
-    class hasSelOP extends GeneticAlgorithm{
+    ;
+
+
+    public class hasSelOP extends GeneticAlgorithm {
         public hasSelOP(GeneticAlgorithm ga) {
             super(ga);
         }
-        hasAttributes stoppingAtEvolution(int maxGenerations){
+
+        public hasAttributes stoppingAtEvolution(int maxGenerations) {
             this.maxGenerations = maxGenerations;
             return new hasAttributes(this);
-        };
+        }
+
+        ;
     }
 
-    class hasAttributes extends GeneticAlgorithm{
+    public class hasAttributes extends GeneticAlgorithm {
         public hasAttributes(GeneticAlgorithm ga) {
             super(ga);
         }
+
         public List<Solution> runOptimization() {
             List<Solution> population = new ArrayList<>();
             //initialisiere Startpopulation with createNewSolution
@@ -152,6 +182,7 @@ public class GeneticAlgorithm{
                     population.add(problem.createNewSolution());
                 } catch (NoSolutionException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
             //evaluate fitness of population
@@ -160,7 +191,7 @@ public class GeneticAlgorithm{
                 //zufälligen evolutionary Operater auswählen und anwenden mit evolve()
                 Random r = new Random();
                 EvolutionaryOperator evolutionaryOperator = this.evolutionaryOperator.get(r.nextInt(this.evolutionaryOperator.size()));
-                List<Solution> children= new ArrayList<>();
+                List<Solution> children = new ArrayList<>();
                 for (int i = 0; i < populationSize; i++) {
                     try {
                         children.add(evolutionaryOperator.evolve(selectionOperator.selectParent(population)));
@@ -180,7 +211,9 @@ public class GeneticAlgorithm{
             }
             //return die Population der letzten Iteration
             return population;
-        };
+        }
+
+        ;
 
         public static void main(String[] args) {
             GeneticAlgorithm ga = new GeneticAlgorithm();
@@ -209,13 +242,7 @@ public class GeneticAlgorithm{
                 }
             };
 
-            List<Solution> res = ga
-                    .solve(problem)
-                    .withPopulationSize(10)
-                    .evolvingSolutionsWith(evoOp)
-                    .evaluatingSolutionsBy(fitEval)
-                    .performingSelectionWith(selecOP)
-                    .stoppingAtEvolution(10)
-                    .runOptimization();
-        }
-}
+
+        };
+    }
+};

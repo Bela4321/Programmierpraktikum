@@ -25,7 +25,7 @@ public class TopKSurvival implements SurvivalOperator {
         if (populationSize > candidates.size()) {
             throw new SurvivalException("Population size is greater than candidates size");
         }
-        List<Solution> pop =  candidates.stream().sorted(Comparator.comparingDouble(Solution::getFitness)).limit(k).collect(Collectors.toList());
+        List<Solution> pop =  candidates.stream().sorted(Comparator.comparingDouble(Solution::getFitness).reversed()).limit(k).collect(Collectors.toList());
         while (pop.size() < populationSize) {
             Solution candidate = candidates.get(r.nextInt(candidates.size()));
             if (!pop.contains(candidate)) {

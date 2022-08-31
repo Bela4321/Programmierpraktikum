@@ -18,5 +18,28 @@ public class KnapsackSolution extends ga.framework.model.Solution {
         }
         this.weight = 0;
     }
+
+    public KnapsackSolution copyOf(){
+        KnapsackSolution copy = new KnapsackSolution(this.getProblem(), this.items, this.capacity);
+        copy.isInside = this.isInside.clone();
+        copy.weight = this.weight;
+        return copy;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < isInside.length; i++) {
+            if (isInside[i]) {
+                sb.append(items[i]);
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        sb.append("\n total weight: "+weight);
+        return sb.toString();
+    }
 }
 
