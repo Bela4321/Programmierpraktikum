@@ -16,28 +16,30 @@ public class KnapsackMutation implements ga.framework.operators.EvolutionaryOper
         KnapsackSolution child = parent.copyOf();
 
         if (r.nextDouble()<=0.5){
-            if (!this.remove(child)){
+            if (!afs.remove(child)){
                 this.add(child);
             }
         } else {
             if (!this.add(child)){
-                this.remove(child);
+                afs.remove(child);
             }
         }
         return child;
     }
-     private boolean remove(KnapsackSolution solution) {
+    class afs{
+    private static boolean remove(KnapsackSolution solution) {
         PermutationVisit pv = new PermutationVisit(solution.isInside.length);
         for (int i = 0; i < solution.isInside.length; i++) {
             int index = pv.next();
             if (solution.isInside[index]) {
                 solution.isInside[index] = false;
                 solution.weight -= solution.items[index];
+                solution.value -= solution.values[index];
                 return true;
             }
         }
         return false;
-     }
+     }}
 
      private boolean add(KnapsackSolution solution){
         PermutationVisit pv = new PermutationVisit(solution.isInside.length);
@@ -46,6 +48,7 @@ public class KnapsackMutation implements ga.framework.operators.EvolutionaryOper
              if (!solution.isInside[index] && solution.weight + solution.items[index] <= solution.capacity) {
                  solution.isInside[index] = true;
                  solution.weight += solution.items[index];
+                    solution.value += solution.values[index];
                  return true;
              }
          }
